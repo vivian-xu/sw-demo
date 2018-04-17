@@ -9,6 +9,13 @@ if ('serviceWorker' in navigator) {
       } else if (reg.active) {
         console.log('SW active!', reg);
       }
+
+      // forced update
+      // if (localStorage.getItem('sw_version') !== version) {
+      //     reg.update().then(function () {
+      //         localStorage.setItem('sw_version', version)
+      //     });
+      // }
     })
     .catch(err => console.log('NO!! Error!!!', err));
 }
