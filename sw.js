@@ -22,6 +22,50 @@ self.addEventListener('install', function(event) {
          ]);
       })
     );
+
+  // // prefetch
+  // const now = Date.now();
+  // // 事先设置好需要进行更新的文件路径
+  // const urlsToPrefetch = [
+  //   '/',
+  //   '/index.html',
+  //   '/sw.css',
+  //   '/main.js',
+  //   '/pics/cat.jpg',
+  //   '/pics/dog.jpg',
+  //   '/pics/no.jpg'
+  // ];
+
+  // event.waitUntil(
+  //   caches.open(CACHE_NAME).then(function(cache) {
+  //     const cachePromises = urlsToPrefetch.map(function(urlToPrefetch) {
+  //       console.log('prefetch');
+  //     // 使用 url 对象进行路由拼接
+  //       const url = new URL(urlToPrefetch, location.href);
+  //       url.search += (url.search ? '&' : '?') + 'cache-bust=' + now;
+  //       // 创建 request 对象进行流量的获取
+  //       const request = new Request(url, {mode: 'no-cors'});
+  //       // 手动发送请求，用来进行文件的更新
+  //       return fetch(request).then(function(response) {
+  //         if (response.status >= 400) {
+  //           // 解决请求失败时的情况
+  //           throw new Error('request for ' + urlToPrefetch +
+  //             ' failed with status ' + response.statusText);
+  //         }
+  //         // 将成功后的 response 流，存放在 caches 套件中，完成指定文件的更新。
+  //         return cache.put(urlToPrefetch, response);
+  //       }).catch(function(error) {
+  //         console.error('Not caching ' + urlToPrefetch + ' due to ' + error);
+  //       });
+  //     });
+
+  //     return Promise.all(cachePromises).then(function() {
+  //       console.log('Pre-fetching complete.');
+  //     });
+  //   }).catch(function(error) {
+  //     console.error('Pre-fetching failed:', error);
+  //   })
+  );
 });
 
 
