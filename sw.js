@@ -1,13 +1,15 @@
-const CACHE_NAME = 'cache-v2';
+const CACHE_NAME = 'cache-v3';
 
 // Perform install steps
-self.addEventListener('install', event => {
+self.addEventListener('install', function(event) {
   console.log(`${CACHE_NAME} installing…`);
-  
+  // skip waiting
+  // self.skipWaiting()
+
   // cache files
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(function(cache) {
         console.log('Opened cache');
         return cache.addAll([
           '/',
@@ -23,20 +25,41 @@ self.addEventListener('install', event => {
 });
 
 
-self.addEventListener('activate', event => {
-  console.log(`${CACHE_NAME} now ready to handle fetches!`);
+// self.addEventListener('activate', event => {
+//   console.log(`${CACHE_NAME} now ready to handle fetches!`);
+//   // event.waitUntil(clients.claim());
+// });
+
+self.addEventListener('activate', function(event) {
+  console.log('Activating new service worker...');
   // event.waitUntil(clients.claim());
+
+  var cacheWhitelist = [CACHE_NAME];
+
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', function(event) {
   console.log('fetch');
 
   event.respondWith(caches.match(event.request)
     .then(function(response) {
+      console.log('fetch');
       if (response !== undefined) {
         return response;
       } else {
         const fetchRequest = event.request.clone();
+        console.log('fetchw ', event.request.clone());
         return fetch(fetchRequest)
           .then(response => {
             // Check if we received a valid response
@@ -44,15 +67,16 @@ self.addEventListener('fetch', event => {
               return response;
             }
 
-            let responseClone = response.clone();
+            const responseClone = response.clone();
 
             caches.open(CACHE_NAME)
-              .then(function(cache) {
+              .then(function (cache) {
                 cache.put(event.request, responseClone);
               });
-
             return response;
-          }).catch(() => caches.match('/pics/no.jpg'));
+          }).catch(function () {
+            return caches.match('/pics/no.jpg');
+          });
       }
     }));
 });
