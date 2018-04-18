@@ -1,3 +1,4 @@
+
 console.log('main js!!');
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js',  {scope: './'})
@@ -19,16 +20,17 @@ if ('serviceWorker' in navigator) {
     })
     .catch(err => console.log('NO!! Error!!!', err));
 }
-function addImg(src) {
-  const img = new Image();
-  img.src = src;
-  document.body.appendChild(img);
-}
+window.addEventListener('DOMContentLoaded', function() {
+  const wrapDom = document.querySelector('#imgsWrap');
 
-const imgList = ['./pics/cat.jpg', './pics/dog.jpg'];
+  function addImg(src) {
+    const img = new Image();
+    img.src = src;
+    wrapDom.appendChild(img);
+  }
 
-setTimeout(() => {
+  const imgList = ['./pics/cat.jpg', './pics/dog.jpg'];
   imgList.forEach((item) => {
     addImg(item);
   });
-}, 0);
+});

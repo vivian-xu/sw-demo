@@ -1,4 +1,23 @@
-  img {
-    width: 400px;
-    height: 500px;
-  }
+body {
+  background: black;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+}
+
+img {
+  width: 400px;
+  height: 500px;
+  border-radius: 4px;
+  border: 2px solid white;
+}
+
+img:not(:last-child) {
+  margin-right: 10px;
+}
+
+#imgsWrap {
+  text-align: center;
+}
