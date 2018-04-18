@@ -24,7 +24,7 @@ if ('serviceWorker' in navigator) {
       } else if (reg.waiting) {
         console.log('SW waiting');
       } else if (reg.active) {
-        console.log('SW active!', reg);
+        console.log('SW active!');
       }
 
       // forced update
@@ -35,10 +35,5 @@ if ('serviceWorker' in navigator) {
       // }
     })
     .catch(err => console.log('NO!! Error!!!', err));
-
-  if (SW.controller) {
-    console.log('send message from main.js..');
-    SW.controller.postMessage(location.href);
-  }
 }
 

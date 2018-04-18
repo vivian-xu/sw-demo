@@ -1,4 +1,14 @@
-const CACHE_NAME = 'cache-v3';
+const CACHE_NAME = 'cache-v1';
+// 事先设置好需要进行更新的文件路径
+const urlsToPrefetch = [
+  '/',
+  '/index.html',
+  '/sw.css',
+  '/main.js',
+  '/pics/cat.jpg',
+  '/pics/dog.jpg',
+  '/pics/no.jpg'
+];
 
 // Perform install steps
 self.addEventListener('install', function(event) {
@@ -10,32 +20,13 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll([
-          '/',
-          '/index.html',
-          '/sw.css',
-          '/main.js',
-          '/pics/cat.jpg',
-          '/pics/dog.jpg',
-          '/pics/no.jpg'
-         ]);
+        console.log('opened cache');
+        return cache.addAll(urlsToPrefetch);
       })
     );
 
   // // prefetch
   // const now = Date.now();
-  // // 事先设置好需要进行更新的文件路径
-  // const urlsToPrefetch = [
-  //   '/',
-  //   '/index.html',
-  //   '/sw.css',
-  //   '/main.js',
-  //   '/pics/cat.jpg',
-  //   '/pics/dog.jpg',
-  //   '/pics/no.jpg'
-  // ];
-
   // event.waitUntil(
   //   caches.open(CACHE_NAME).then(function(cache) {
   //     const cachePromises = urlsToPrefetch.map(function(urlToPrefetch) {
@@ -112,44 +103,26 @@ self.addEventListener('fetch', function(event) {
 
   event.respondWith(caches.match(event.request)
     .then(function(response) {
-      console.log('fetch');
       if (response !== undefined) {
+        // if(event.request.clone().url.indexOf('cat.jpg') !== -1) {
+        //   return caches.match('/pics/no.jpg');
+        // }
         return response;
-      } else {
-        const fetchRequest = event.request.clone();
-        console.log('fetchw ', event.request.clone());
-        return fetch(fetchRequest)
-          .then(response => {
-            // Check if we received a valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            const responseClone = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(function (cache) {
-                cache.put(event.request, responseClone);
-              });
-            return response;
-          }).catch(function () {
-            return caches.match('/pics/no.jpg');
-          });
       }
+
+      const fetchRequest = event.request.clone();
+      return fetch(fetchRequest)
+        .then(response => {
+          // Check if we received a valid response
+          if(!response || response.status !== 200) return response;
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME)
+            .then(function (cache) {
+              cache.put(event.request, responseClone);
+            });
+          return response;
+        }).catch(function () {
+          return caches.match('/pics/no.jpg');
+        });
     }));
 });
-
-self.addEventListener('message', event => {
-  console.log("receive message from main.js: " + event.data);
-  // 更新根目录下的 html 文件。
-  var url = event.data;
-  console.log("update root file " + url);
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-        return fetch(url)
-          .then(res=>{
-            cache.put(url,res);
-          })
-    })
-  )
-})
