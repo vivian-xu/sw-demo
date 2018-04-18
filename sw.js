@@ -138,3 +138,18 @@ self.addEventListener('fetch', function(event) {
       }
     }));
 });
+
+self.addEventListener('message', event => {
+  console.log("receive message from main.js: " + event.data);
+  // 更新根目录下的 html 文件。
+  var url = event.data;
+  console.log("update root file " + url);
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+        return fetch(url)
+          .then(res=>{
+            cache.put(url,res);
+          })
+    })
+  )
+})
