@@ -95,6 +95,20 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
   console.log('fetch');
+  // // 优化的 prefech 每次都会去取新的数据，但是要到下次刷新才能更新
+  // event.respondWith(
+  //   caches.open(CACHE_NAME).then(function(cache) {
+  //     return cache.match(event.request).then(function(response) {
+  //       var fetchPromise = fetch(event.request).then(function(networkResponse) {
+  //         if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+  //           return networkResponse;
+  //         }
+  //         cache.put(event.request, networkResponse.clone());
+  //         return networkResponse;
+  //       })
+  //       return response || fetchPromise;
+  //     })
+  //   }));
 
   event.respondWith(caches.match(event.request)
     .then(function(response) {
